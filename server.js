@@ -88,6 +88,21 @@ setInterval(() => {
     io.emit('statistic', { globalConnectionCount: getGlobalConnectionCount() });
 }, 5000)
 
+//base auth
+app.use((req, res, next) => {
+    const auth = { login: process.env.USER, password:process.env.PASS };
+
+    const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
+    const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
+
+    if (login && login === auth.login && password && password === auth.password) {
+        return next();
+    }
+
+    res.set('WWW-Authenticate', 'Basic realm="401"');
+    res.status(401).send('Authentication required.');
+});
+
 // Serve frontend files
 app.use(express.static('public'));
 
