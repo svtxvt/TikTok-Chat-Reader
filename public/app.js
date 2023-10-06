@@ -23,12 +23,17 @@ $(document).ready(() => {
 
 function connect() {
     let uniqueId = window.settings.username || $('#uniqueIdInput').val();
+    let spreadsheetId = $('#spreadsheetIdInput').val(); // get spreadsheet id
     if (uniqueId !== '') {
+        // Saving to local storage
+        window.localStorage.setItem('username', uniqueId);
+        window.localStorage.setItem('sheetId', spreadsheetId);
 
         $('#stateText').text('Connecting...');
 
         connection.connect(uniqueId, {
-            enableExtendedGiftInfo: true
+            enableExtendedGiftInfo: true,
+            spreadsheetId: spreadsheetId
         }).then(state => {
             $('#stateText').text(`Connected to roomId ${state.roomId}`);
 

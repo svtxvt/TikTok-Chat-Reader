@@ -5,6 +5,7 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 const { TikTokConnectionWrapper, getGlobalConnectionCount } = require('./connectionWrapper');
 const { clientBlocked } = require('./limiter');
+const {GoogleSpreadsheet}= require("google-spreadsheet");
 
 const app = express();
 const httpServer = createServer(app);
@@ -17,17 +18,22 @@ const io = new Server(httpServer, {
 });
 
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
     let tiktokConnectionWrapper;
+    let spreadsheetId;
+    let username;
 
     console.info('New connection from origin', socket.handshake.headers['origin'] || socket.handshake.headers['referer']);
 
-    socket.on('setUniqueId', (uniqueId, options) => {
+    socket.on('setUniqueId', async (uniqueId, options) => {
 
         // Prohibit the client from specifying these options (for security reasons)
-        if (typeof options === 'object' && options) {
+        if (options && options.spreadsheetId) {
             delete options.requestOptions;
             delete options.websocketOptions;
+            spreadsheetId = options.spreadsheetId;
+            username = uniqueId;
+            delete options.spreadsheetId;
         } else {
             options = {};
         }
@@ -63,7 +69,44 @@ io.on('connection', (socket) => {
         // Redirect message events
         tiktokConnectionWrapper.connection.on('roomUser', msg => socket.emit('roomUser', msg));
         tiktokConnectionWrapper.connection.on('member', msg => socket.emit('member', msg));
-        tiktokConnectionWrapper.connection.on('chat', msg => socket.emit('chat', msg));
+        tiktokConnectionWrapper.connection.on('chat', async (msg) => {
+            socket.emit('chat', msg);
+
+            // Write the new message to the Google Spreadsheet
+            if (spreadsheetId) {
+                try {
+                const doc = new GoogleSpreadsheet(spreadsheetId);
+                const config = {
+                    "type": process.env.GOOGLE_ACCOUNT_TYPE,
+                    "project_id": process.env.GOOGLE_PROJECT_ID,
+                    "private_key_id": process.env.GOOGLE_PRIVATE_KEY_ID,
+                    "private_key": process.env.GOOGLE_PRIVATE_KEY.split(String.raw`\n`).join('\n'),
+                    "client_email": process.env.GOOGLE_CLIENT_EMAIL,
+                    "client_id": process.env.GOOGLE_CLIENT_ID,
+                    "auth_uri": process.env.GOOGLE_AUTH_URI,
+                    "token_uri": process.env.GOOGLE_TOKEN_URI,
+                    "auth_provider_x509_cert_url": process.env.GOOGLE_AUTH_PROVIDER_X509_CERT_URL,
+                    "client_x509_cert_url": process.env.GOOGLE_CLIENT_X509_CERT_URL
+                }
+
+                await doc?.useServiceAccountAuth(config, 'oleksandra-kalinina@landing-page-creator-378916.iam.gserviceaccount.com');
+                await doc?.loadInfo();
+                let sheet;
+                    sheet = doc?.sheetsByTitle[username];
+                    console.log('username', username);
+                    if (!sheet) {
+                       sheet = await doc.addSheet({ title: username, headerValues: ['social_network', 'author', 'message'] });
+                    }
+                    await sheet?.addRow({
+                        'social_network': 'TikTok',
+                        'author': msg.uniqueId,
+                        'message': msg.comment,
+                    });
+                } catch (error) {
+                    console.error("Error fetching context from Google Sheet:", JSON.stringify(error));
+                }
+            }
+        });
         tiktokConnectionWrapper.connection.on('gift', msg => socket.emit('gift', msg));
         tiktokConnectionWrapper.connection.on('social', msg => socket.emit('social', msg));
         // tiktokConnectionWrapper.connection.on('like', msg => socket.emit('like', msg));

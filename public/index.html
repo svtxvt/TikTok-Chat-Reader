@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TikTok LIVE Chat Reader (Demo)</title>
+    <link rel="icon" type="image/png" href="/favicon-32x32.png">
 
     <meta name="description" content="A chat reader for TikTok LIVE utilizing TikTok-Live-Connector and Socket.IO to forward the data to the client. This demo project uses the unofficial TikTok API to retrieve chat comments, gifts and other events from TikTok LIVE.">
     <meta name="keywords" content="TikTok,Live,Livestream,Chat,Reader,Scraper,Tracker,tiktok.com,broadcast,api,library,node,node.js,javascript">
@@ -21,26 +22,35 @@
         function generateOverlay() {
             let username = $('#uniqueIdInput').val();
             let url = `/obs.html?username=${username}&showLikes=1&showChats=1&showGifts=1&showFollows=1&showJoins=1&bgColor=rgb(24,23,28)&fontColor=rgb(227,229,235)&fontSize=1.3em`;
-        
-            if(username) {
+
+            if(username && sheetId) {
                 window.open(url, '_blank');
             } else {
                 alert("Enter username");
             }
         }
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            if(localStorage.getItem('username')) {
+                document.getElementById('uniqueIdInput').value = localStorage.getItem('username');
+            }
+            if(localStorage.getItem('sheetId')) {
+                document.getElementById('spreadsheetIdInput').value = localStorage.getItem('sheetId');
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="head">
         <h1>TikTok LIVE Chat Reader</h1>
-        <span class="subTitle">Source: <a href="https://github.com/zerodytrash/TikTok-Chat-Reader">https://github.com/zerodytrash/TikTok-Chat-Reader</a></span>      
-    </div>
-
-    <div>
-        A chat reader for <a href="https://www.tiktok.com/live">TikTok LIVE</a> utilizing <a href="https://github.com/zerodytrash/TikTok-Live-Connector">TikTok-Live-Connector</a> and <a href="https://socket.io/">Socket.IO</a> to forward the data to the client. More Tools available at <a href="https://tikfinity.zerody.one/" target="_blank">TikFinity</a>.
+        <span class="subTitle">Source: <a href="https://github.com/zerodytrash/TikTok-Chat-Reader">https://github.com/zerodytrash/TikTok-Chat-Reader</a></span>
     </div>
 
     <div class="inputFields">
+        <p>Enter the Google Spreadsheet ID:</p>
+        <input type="text" id="spreadsheetIdInput"> <span class="subTitle">Дайте права на редактирование таблицы oleksandra-kalinina@landing-page-creator-378916.iam.gserviceaccount.com</span>
         <p>Enter the <b>@username</b> of a user who is currently live:</p>
         <input type="text" id="uniqueIdInput">
         <input type="button" id="connectButton" value="connect">
