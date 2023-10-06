@@ -93,12 +93,13 @@ io.on('connection', async (socket) => {
           sheet = doc?.sheetsByTitle[username];
           console.log('username', username);
           if (!sheet) {
-            sheet = await doc.addSheet({ title: username, headerValues: ['social_network', 'author', 'message'] });
+            sheet = await doc.addSheet({ title: username, headerValues: ['social_network', 'author', 'message', 'time'] });
           }
           await sheet?.addRow({
             social_network: 'TikTok',
             author: `https://www.tiktok.com/${msg.uniqueId}`,
             message: msg.comment,
+            time: new Date().toLocaleString(),
           });
         } catch (error) {
           console.error('Error fetching context from Google Sheet:', JSON.stringify(error));
