@@ -91,7 +91,7 @@ io.on('connection', async (socket) => {
           await doc?.loadInfo();
           let sheet;
           sheet = doc?.sheetsByTitle[username];
-          console.log('username', username);
+
           if (!sheet) {
             sheet = await doc.addSheet({ title: username, headerValues: ['social_network', 'author', 'message', 'time'] });
           }
