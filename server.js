@@ -97,7 +97,7 @@ io.on('connection', async (socket) => {
           }
           await sheet?.addRow({
             social_network: 'TikTok',
-            author: msg.uniqueId,
+            author: `https://www.tiktok.com/${msg.uniqueId}`,
             message: msg.comment,
           });
         } catch (error) {
