@@ -4,11 +4,15 @@ const express = require('express');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
+const async = require('async');
 const { TikTokConnectionWrapper, getGlobalConnectionCount } = require('./connectionWrapper');
 const { clientBlocked } = require('./limiter');
 
 const app = express();
 const httpServer = createServer(app);
+const q = async.queue((task, callback) => {
+  task(callback);
+}, 1);
 
 // Enable cross origin resource sharing
 const io = new Server(httpServer, {
@@ -69,41 +73,44 @@ io.on('connection', async (socket) => {
     tiktokConnectionWrapper.connection.on('member', (msg) => socket.emit('member', msg));
     tiktokConnectionWrapper.connection.on('chat', async (msg) => {
       socket.emit('chat', msg);
-
+      // add queue to google sheet reqs
       // Write the new message to the Google Spreadsheet
       if (spreadsheetId) {
-        try {
-          const doc = new GoogleSpreadsheet(spreadsheetId);
-          const config = {
-            type: process.env.GOOGLE_ACCOUNT_TYPE,
-            project_id: process.env.GOOGLE_PROJECT_ID,
-            private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
-            private_key: process.env.GOOGLE_PRIVATE_KEY.split(String.raw`\n`).join('\n'),
-            client_email: process.env.GOOGLE_CLIENT_EMAIL,
-            client_id: process.env.GOOGLE_CLIENT_ID,
-            auth_uri: process.env.GOOGLE_AUTH_URI,
-            token_uri: process.env.GOOGLE_TOKEN_URI,
-            auth_provider_x509_cert_url: process.env.GOOGLE_AUTH_PROVIDER_X509_CERT_URL,
-            client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL,
-          };
+        q.push(async (callback) => {
+          try {
+            const doc = new GoogleSpreadsheet(spreadsheetId);
+            const config = {
+              type: process.env.GOOGLE_ACCOUNT_TYPE,
+              project_id: process.env.GOOGLE_PROJECT_ID,
+              private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
+              private_key: process.env.GOOGLE_PRIVATE_KEY.split(String.raw`\n`).join('\n'),
+              client_email: process.env.GOOGLE_CLIENT_EMAIL,
+              client_id: process.env.GOOGLE_CLIENT_ID,
+              auth_uri: process.env.GOOGLE_AUTH_URI,
+              token_uri: process.env.GOOGLE_TOKEN_URI,
+              auth_provider_x509_cert_url: process.env.GOOGLE_AUTH_PROVIDER_X509_CERT_URL,
+              client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL,
+            };
+            await doc?.useServiceAccountAuth(config, 'oleksandra-kalinina@landing-page-creator-378916.iam.gserviceaccount.com');
+            await doc?.loadInfo();
+            let sheet;
+            sheet = doc?.sheetsByTitle[username];
 
-          await doc?.useServiceAccountAuth(config, 'oleksandra-kalinina@landing-page-creator-378916.iam.gserviceaccount.com');
-          await doc?.loadInfo();
-          let sheet;
-          sheet = doc?.sheetsByTitle[username];
-
-          if (!sheet) {
-            sheet = await doc.addSheet({ title: username, headerValues: ['social_network', 'author', 'message', 'time'] });
+            if (!sheet) {
+              sheet = await doc.addSheet({ title: username, headerValues: ['social_network', 'author', 'message', 'time'] });
+            }
+            await sheet?.addRow({
+              social_network: 'TikTok',
+              author: `https://www.tiktok.com/${msg.uniqueId}`,
+              message: msg.comment,
+              time: new Date().toLocaleString(),
+            });
+            callback();
+          } catch (error) {
+            console.error('Error fetching Google Sheet:', JSON.stringify(error));
+            callback(error);
           }
-          await sheet?.addRow({
-            social_network: 'TikTok',
-            author: `https://www.tiktok.com/${msg.uniqueId}`,
-            message: msg.comment,
-            time: new Date().toLocaleString(),
-          });
-        } catch (error) {
-          console.error('Error fetching context from Google Sheet:', JSON.stringify(error));
-        }
+        });
       }
     });
     tiktokConnectionWrapper.connection.on('gift', (msg) => socket.emit('gift', msg));
