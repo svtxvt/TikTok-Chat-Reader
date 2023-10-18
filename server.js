@@ -100,7 +100,7 @@ io.on('connection', async (socket) => {
             sheet = doc?.sheetsByTitle[sheetName];
 
             if (!sheet) {
-              sheet = await doc.addSheet({ title: sheetName, headerValues: ['social_network', 'author', 'nickname', 'message', 'time', 'followers'] });
+              sheet = await doc.addSheet({ title: sheetName, headerValues: ['social_network', 'author', 'nickname', 'message', 'time', 'followers', 'is_subscribed'] });
             }
             await sheet?.addRow({
               social_network: 'TikTok',
@@ -109,6 +109,7 @@ io.on('connection', async (socket) => {
               message: msg.comment,
               time: new Date().toLocaleString(),
               followers: String(msg?.followInfo?.followerCount),
+              is_subscribed: String(msg?.followInfo?.followStatus === 1),
             });
             callback();
           } catch (error) {
