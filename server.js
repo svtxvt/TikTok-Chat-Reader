@@ -25,6 +25,7 @@ io.on('connection', async (socket) => {
   let tiktokConnectionWrapper;
   let spreadsheetId;
   let username;
+  let sheetName;
 
   console.info('New connection from origin', socket.handshake.headers.origin || socket.handshake.headers.referer);
 
@@ -34,8 +35,10 @@ io.on('connection', async (socket) => {
       delete options.requestOptions;
       delete options.websocketOptions;
       spreadsheetId = options.spreadsheetId;
+      sheetName = options.sheetName;
       username = uniqueId;
       delete options.spreadsheetId;
+      delete options.sheetName;
     } else {
       options = {};
     }
@@ -94,16 +97,18 @@ io.on('connection', async (socket) => {
             await doc?.useServiceAccountAuth(config, 'oleksandra-kalinina@landing-page-creator-378916.iam.gserviceaccount.com');
             await doc?.loadInfo();
             let sheet;
-            sheet = doc?.sheetsByTitle[username];
+            sheet = doc?.sheetsByTitle[sheetName];
 
             if (!sheet) {
-              sheet = await doc.addSheet({ title: username, headerValues: ['social_network', 'author', 'message', 'time'] });
+              sheet = await doc.addSheet({ title: sheetName, headerValues: ['social_network', 'author', 'nickname', 'message', 'time', 'followers'] });
             }
             await sheet?.addRow({
               social_network: 'TikTok',
-              author: `https://www.tiktok.com/${msg.uniqueId}`,
+              author: `https://www.tiktok.com/@${msg.uniqueId}`,
+              nickname: msg.nickname,
               message: msg.comment,
               time: new Date().toLocaleString(),
+              followers: String(msg?.followInfo?.followerCount),
             });
             callback();
           } catch (error) {

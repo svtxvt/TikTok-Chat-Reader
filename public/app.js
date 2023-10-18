@@ -24,6 +24,8 @@ $(document).ready(() => {
 function connect() {
   const uniqueId = window.settings.username || $('#uniqueIdInput').val();
   const spreadsheetId = $('#spreadsheetIdInput').val(); // get spreadsheet id
+  const sheetName = $('#sheetNameInput').val() || `${uniqueId}(${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })})`;
+
   if (uniqueId !== '') {
     // Saving to local storage
     window.localStorage.setItem('username', uniqueId);
@@ -34,6 +36,7 @@ function connect() {
     connection.connect(uniqueId, {
       enableExtendedGiftInfo: true,
       spreadsheetId,
+      sheetName,
     }).then((state) => {
       $('#stateText').text(`Connected to roomId ${state.roomId}`);
 
