@@ -104,7 +104,7 @@ io.on('connection', async (socket) => {
             }
             await sheet?.addRow({
               social_network: 'TikTok',
-              author: `https://www.tiktok.com/@${msg.uniqueId}`,
+              author: `=HYPERLINK("https://www.tiktok.com/@${msg.uniqueId}";"@${msg.uniqueId}")`,
               nickname: msg.nickname,
               message: msg.comment,
               time: new Date().toLocaleString(),

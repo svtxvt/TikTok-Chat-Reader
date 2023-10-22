@@ -1,5 +1,5 @@
 body {
-    font-family:Arial, Helvetica, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     min-width: 800px;
 }
 
@@ -27,12 +27,7 @@ a {
     text-decoration: none;
 }
 
-#roomUserText {
-    width: 100%;
-    text-align: right;
-}
-
-#roomStats {
+#roomUserText, #roomStats {
     width: 100%;
     text-align: right;
 }
@@ -63,12 +58,7 @@ a {
     height: calc(100vh - 90px);
 }
 
-.chatcontainer {
-    min-width: 400px;
-    max-width: calc(100vw - 430px);
-}
-
-.giftcontainer {
+.chatcontainer, .giftcontainer {
     min-width: 400px;
 }
 
@@ -81,4 +71,94 @@ a {
     height: 50px;
     width: 50px;
     margin-right: 10px;
+}
+
+.img{
+    max-width: 600px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.inputFields{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    max-width: 800px;
+}
+body {
+    font-family: 'Arial', sans-serif;
+    min-width: 800px;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+h1 {
+    font-size: 2em;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #18508f;
+}
+
+a {
+    color: #58a6ff;
+    text-decoration: none;
+}
+
+.head {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+}
+
+.subTitle {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #999;
+    margin-bottom: 20px;
+}
+
+.inputFields{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border-radius: 5px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="button"] {
+    background-color: #58a6ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input[type="button"]:hover {
+    background-color: #18508f;
+}
+
+.splitchattable, .splitstatetable {
+    width: 100%;
+    margin-top: 30px;
+}
+
+.containerheader {
+    text-align: center;
+    color: #18508f;
+    margin-bottom: 10px;
 }
