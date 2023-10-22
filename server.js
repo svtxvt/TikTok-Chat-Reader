@@ -119,16 +119,16 @@ io.on('connection', async (socket) => {
         });
       }
     });
-    tiktokConnectionWrapper.connection.on('gift', (msg) => socket.emit('gift', msg));
-    tiktokConnectionWrapper.connection.on('social', (msg) => socket.emit('social', msg));
+    // tiktokConnectionWrapper.connection.on('gift', (msg) => socket.emit('gift', msg));
+    // tiktokConnectionWrapper.connection.on('social', (msg) => socket.emit('social', msg));
     // tiktokConnectionWrapper.connection.on('like', msg => socket.emit('like', msg));
-    tiktokConnectionWrapper.connection.on('questionNew', (msg) => socket.emit('questionNew', msg));
-    tiktokConnectionWrapper.connection.on('linkMicBattle', (msg) => socket.emit('linkMicBattle', msg));
-    tiktokConnectionWrapper.connection.on('linkMicArmies', (msg) => socket.emit('linkMicArmies', msg));
-    tiktokConnectionWrapper.connection.on('liveIntro', (msg) => socket.emit('liveIntro', msg));
-    tiktokConnectionWrapper.connection.on('emote', (msg) => socket.emit('emote', msg));
-    tiktokConnectionWrapper.connection.on('envelope', (msg) => socket.emit('envelope', msg));
-    tiktokConnectionWrapper.connection.on('subscribe', (msg) => socket.emit('subscribe', msg));
+    // tiktokConnectionWrapper.connection.on('questionNew', (msg) => socket.emit('questionNew', msg));
+    // tiktokConnectionWrapper.connection.on('linkMicBattle', (msg) => socket.emit('linkMicBattle', msg));
+    // tiktokConnectionWrapper.connection.on('linkMicArmies', (msg) => socket.emit('linkMicArmies', msg));
+    // tiktokConnectionWrapper.connection.on('liveIntro', (msg) => socket.emit('liveIntro', msg));
+    // tiktokConnectionWrapper.connection.on('emote', (msg) => socket.emit('emote', msg));
+    // tiktokConnectionWrapper.connection.on('envelope', (msg) => socket.emit('envelope', msg));
+    // tiktokConnectionWrapper.connection.on('subscribe', (msg) => socket.emit('subscribe', msg));
   });
 
   socket.on('disconnect', () => {
