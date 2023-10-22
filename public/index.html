@@ -11,6 +11,54 @@
     <meta name="keywords" content="TikTok,Live,Livestream,Chat,Reader,Scraper,Tracker,tiktok.com,broadcast,api,library,node,node.js,javascript">
 
     <link rel="stylesheet" href="style.css">
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .slider.round {
+            border-radius: 34px;
+        }
+        .slider.round:before {
+            border-radius: 50%;
+        }
+    </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -27,6 +75,14 @@
                 window.open(url, '_blank');
             } else {
                 alert("Enter username");
+            }
+        }
+        function toggleImage(id) {
+            var img = document.getElementById(id);
+            if (img.style.display === "none") {
+                img.style.display = "block";
+            } else {
+                img.style.display = "none";
             }
         }
     </script>
@@ -50,42 +106,60 @@
 <div class="inputFields">
     <p>Введите <b>@username</b> пользователя, который сейчас ведет прямую трансляцию:</p>
     <input type="text" id="uniqueIdInput">
-    <img class="img" src="./images/1.png" alt=""/>
+    Показать инструкцию
+    <label class="switch">
+        <input type="checkbox" onclick="toggleImage('img1')">
+        <span class="slider round"></span>
+    </label>
+    <img class="img" id="img1" src="./images/1.png" style="display:none" alt=""/>
+    <!-- Repeat for other images -->
     <p>Введите ID Google Таблицы (необязательно):</p>
-    <input type="text" id="spreadsheetIdInput"> <span class="subTitle">Предоставьте права на редактирование таблицы oleksandra-kalinina@landing-page-creator-378916.iam.gserviceaccount.com</span>
-    <img class="img" src="./images/2.png" alt=""/>
+    <input type="text" id="spreadsheetIdInput"> <span class="subTitle">Предоставьте права на редактирование таблицы <b>oleksandra-kalinina@landing-page-creator-378916.iam.gserviceaccount.com</b></span>
+    Показать инструкцию
+    <label class="switch">
+        <input type="checkbox" onclick="(()=>{toggleImage('img2');toggleImage('img4');toggleImage('img5');})()">
+        <span class="slider round"></span>
+    </label>
+    <img class="img" id="img2" src="./images/2.png" style="display:none" alt=""/>
+    <img class="img" id="img4" src="./images/4.png" style="display:none" alt=""/>
+    <img class="img" id="img5" src="./images/5.png" style="display:none" alt=""/>
     <p>Введите название листа (необязательно):</p>
     <input type="text" id="sheetNameInput"> <span class="subTitle">По умолчанию лист в таблице будет называться username_date</span>
-    <img class="img" src="./images/3.png" alt=""/>
+    Показать инструкцию
+    <label class="switch">
+        <input type="checkbox" onclick="toggleImage('img3')">
+        <span class="slider round"></span>
+    </label>
+    <img class="img" id="img3" src="./images/3.png" style="display:none" alt=""/>
     <p/>
     <input type="button" id="connectButton" value="Подключиться">
     <!--    <a href="#" onclick="generateOverlay()">Сгенерировать URL наложения</a>-->
 </div>
 
-    <table class="splitstatetable">
-        <tr>
-            <td>
-                <pre id="stateText"></pre>
-            </td>
-            <td>
-                <div id="roomStats"></div>
-            </td>
-        </tr>
-    </table>
+<table class="splitstatetable">
+    <tr>
+        <td>
+            <pre id="stateText"></pre>
+        </td>
+        <td>
+            <div id="roomStats"></div>
+        </td>
+    </tr>
+</table>
 
-    <table class="splitchattable">
-        <tr>
-            <td>
-                <div class="chatcontainer">
-                    <h3 class="containerheader">Чаты</h3>
-                </div>
-            </td>
-            <td>
-                <div class="giftcontainer">
-                    <h3 class="containerheader">Подарки</h3>
-                </div>
-            </td>
-        </tr>
-    </table>
+<table class="splitchattable">
+    <tr>
+        <td>
+            <div class="chatcontainer">
+                <h3 class="containerheader">Чаты</h3>
+            </div>
+        </td>
+        <td>
+            <div class="giftcontainer">
+                <h3 class="containerheader">Подарки</h3>
+            </div>
+        </td>
+    </tr>
+</table>
 </body>
 </html>

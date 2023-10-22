@@ -20,6 +20,10 @@ a {
 .subTitle {
     font-size: 0.8em;
     font-weight: bold;
+    & b {
+        font-weight: bold;
+        color: black;
+    }
 }
 
 .usernamelink {
